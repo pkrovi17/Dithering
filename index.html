@@ -1,28 +1,142 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en" class="theme-default theme-amber-crt">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dithering Terminal</title>
-  <link rel="stylesheet" href="styles.css"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Dither</title>
+
+  <link rel="stylesheet" href="./index-DXtjAZsq.css" />
+
+  <style>
+    :root {
+      --term-bg: #050400 !important;
+      --term-panel: #100b00 !important;
+      --term-border: #7a5200 !important;
+      --term-accent: #ffb000 !important;
+      --term-accent-dim: #c78300 !important;
+      --term-text: #ffc247 !important;
+      --term-text-dim: #b98218 !important;
+      --term-text-bright: #ffd978 !important;
+    }
+
+    html,
+    body,
+    #root {
+      margin: 0;
+      width: 100%;
+      min-height: 100%;
+      background: #050400 !important;
+      color: #ffb000 !important;
+      font-family: "IBM Plex Mono", "JetBrains Mono", "Courier New", monospace !important;
+    }
+
+    body {
+      overflow: hidden;
+    }
+
+    #root {
+      position: relative;
+      z-index: 1;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255, 176, 0, 0.045),
+        rgba(255, 176, 0, 0.045) 1px,
+        transparent 1px,
+        transparent 4px
+      );
+      mix-blend-mode: screen;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 11;
+      pointer-events: none;
+      background: radial-gradient(circle at center, transparent 45%, rgba(0,0,0,0.55) 100%);
+      box-shadow:
+        inset 0 0 80px rgba(255, 176, 0, 0.14),
+        inset 0 0 180px rgba(0, 0, 0, 0.9);
+    }
+
+    canvas,
+    video,
+    img {
+      filter:
+        sepia(0.3)
+        saturate(1.2)
+        contrast(1.08)
+        drop-shadow(0 0 8px rgba(255, 176, 0, 0.18));
+    }
+
+    .bg-term-bg,
+    .bg-\[\#0a0a0a\] {
+      background-color: #050400 !important;
+    }
+
+    .bg-term-panel {
+      background-color: #100b00 !important;
+    }
+
+    .border-term-border {
+      border-color: #7a5200 !important;
+    }
+
+    .text-term-text {
+      color: #ffc247 !important;
+    }
+
+    .text-term-text-dim {
+      color: #b98218 !important;
+    }
+
+    .text-term-text-bright {
+      color: #ffd978 !important;
+      text-shadow: 0 0 6px rgba(255, 176, 0, 0.45);
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font-family: inherit !important;
+    }
+
+    button:hover,
+    a:hover {
+      color: #ffd978 !important;
+      text-shadow: 0 0 6px rgba(255, 176, 0, 0.5);
+    }
+
+    .bg-term-text-bright {
+      background-color: #ffb000 !important;
+    }
+
+    .fallback {
+      padding: 24px;
+      color: #ffb000;
+      font-family: "Courier New", monospace;
+    }
+  </style>
 </head>
-<body>
-  <div class="crt">
-    <header class="terminal-header">
-      <h1>Dithering v1.0</h1>
-      <p class="subtitle">SYSTEM READY</p>
-    </header>
 
-    <main class="terminal" id="terminal">
-      <div id="output"></div>
-
-      <div class="input-line">
-        <span>&gt;</span>
-        <input id="input" autocomplete="off" autofocus />
-      </div>
-    </main>
+<body class="bg-[#0a0a0a]">
+  <div id="root">
+    <div class="fallback">
+      DITHER BOOTING...
+      <br />
+      If this message stays here, the main JavaScript file is not loading.
+    </div>
   </div>
 
-  <script src="app.js"></script>
+  <script type="module" src="./index-D5s-AdpN.js"></script>
 </body>
 </html>
