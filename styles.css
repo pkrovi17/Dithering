@@ -1,0 +1,103 @@
+:root {
+  --amber: #ffb000;
+  --amber-dim: #cc8a00;
+  --bg: #0a0a0a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--amber);
+  font-family: "Courier New", monospace;
+}
+
+/* CRT container */
+.crt {
+  position: relative;
+  height: 100vh;
+  padding: 20px;
+}
+
+/* scanlines */
+.crt::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255,176,0,0.05),
+    rgba(255,176,0,0.05) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  pointer-events: none;
+}
+
+/* glow */
+.crt::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 80px rgba(255,176,0,0.15);
+  pointer-events: none;
+}
+
+/* header */
+.terminal-header {
+  margin-bottom: 10px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  text-shadow: 0 0 6px var(--amber);
+}
+
+.subtitle {
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+/* terminal box */
+.terminal {
+  border: 1px solid var(--amber-dim);
+  padding: 10px;
+  height: calc(100vh - 100px);
+  overflow-y: auto;
+  box-shadow: 0 0 10px rgba(255,176,0,0.3);
+}
+
+/* input */
+.input-line {
+  display: flex;
+  gap: 8px;
+}
+
+input {
+  background: transparent;
+  border: none;
+  color: var(--amber);
+  outline: none;
+  width: 100%;
+  font-family: inherit;
+}
+
+/* blinking cursor */
+input::after {
+  content: "_";
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+/* output lines */
+.line {
+  margin-bottom: 4px;
+  white-space: pre-wrap;
+}
