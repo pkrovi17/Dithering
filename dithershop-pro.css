@@ -472,6 +472,8 @@ img {
 }
 
 #ds-process-light.busy {
+  background: #050400;
+  color: var(--term-accent) !important;
   animation: ds-process-pulse 0.55s infinite alternate;
 }
 

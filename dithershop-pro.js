@@ -8,6 +8,7 @@
   };
 
   const els = {};
+  let processIdleTimer = null;
 
   function logProcess(message) {
     const output = document.querySelector("#ds-console-output");
@@ -31,6 +32,19 @@
 
     light.textContent = label || (isBusy ? "RUNNING" : "IDLE");
     light.classList.toggle("busy", isBusy);
+    light.setAttribute("aria-busy", isBusy ? "true" : "false");
+  }
+
+  function pulseProcess(label = "RUNNING", duration = 500) {
+    if (processIdleTimer) {
+      clearTimeout(processIdleTimer);
+    }
+
+    setProcessBusy(true, label);
+    processIdleTimer = setTimeout(() => {
+      processIdleTimer = null;
+      setProcessBusy(false, "IDLE");
+    }, duration);
   }
 
   async function withProcess(label, task) {
@@ -93,6 +107,7 @@
 
       layer.opacity = Number(els.opacity.value) / 100;
       renderLayers();
+      pulseProcess("UPDATING", 450);
       logProcess(`OPACITY SET: ${Math.round(layer.opacity * 100)}%`);
     });
 
@@ -102,15 +117,27 @@
 
       layer.blend = els.blend.value;
       renderLayers();
+      pulseProcess("UPDATING", 450);
       logProcess(`BLEND MODE SET: ${labelBlend(layer.blend).toUpperCase()}`);
     });
 
     els.send.addEventListener("click", sendActiveLayerToMainEditor);
     els.exportFlat.addEventListener("click", exportFlattenedPNG);
     els.refreshPreview.addEventListener("click", refreshPreview);
+    window.addEventListener("dithershop:process-busy", event => {
+      pulseProcess(event.detail?.label || "RUNNING", event.detail?.duration || 500);
+    });
+    window.addEventListener("dithershop:process-idle", () => {
+      if (processIdleTimer) {
+        clearTimeout(processIdleTimer);
+        processIdleTimer = null;
+      }
+      setProcessBusy(false, "IDLE");
+    });
   }
 
   function refreshPreview() {
+    pulseProcess("UPDATING", 700);
     window.dispatchEvent(new CustomEvent("dithershop:refresh-preview"));
     logProcess("MANUAL UPDATE REQUESTED: REFRESHING CURRENT IMAGE");
   }
@@ -127,6 +154,7 @@
       const label = readableControlLabel(target);
       if (!label) return;
 
+      pulseProcess("UPDATING", 650);
       logProcess(`EFFECT UI CLICK: ${label}`);
     }, true);
 
@@ -147,6 +175,7 @@
       if (previous === current) return;
       seenValues.set(target, current);
 
+      pulseProcess("UPDATING", 650);
       logProcess(`EFFECT CONTROL: ${label || target.type || target.tagName.toLowerCase()} ${formatValue(previous)} -> ${formatValue(current)}`);
     }, true);
 
@@ -158,6 +187,7 @@
       const current = readControlValue(target);
 
       seenValues.set(target, current);
+      pulseProcess("UPDATING", 650);
       logProcess(`EFFECT CHANGE COMMITTED: ${label || target.tagName.toLowerCase()} = ${formatValue(current)}`);
     }, true);
   }
