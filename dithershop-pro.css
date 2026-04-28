@@ -448,6 +448,29 @@ img {
   box-shadow: 0 0 10px rgba(255, 196, 0, 0.5);
 }
 
+.ds-process-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+#ds-refresh-preview {
+  color: var(--term-text-bright) !important;
+  background: rgba(255, 196, 0, 0.1);
+  border: 1px solid var(--term-border);
+  padding: 2px 7px;
+  font-size: 10px;
+  line-height: 1.2;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+#ds-refresh-preview:hover {
+  color: #050400 !important;
+  background: var(--term-accent);
+  text-shadow: none;
+}
+
 #ds-process-light.busy {
   animation: ds-process-pulse 0.55s infinite alternate;
 }

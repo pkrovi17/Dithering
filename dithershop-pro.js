@@ -62,6 +62,7 @@
     els.blend = $("#ds-blend");
     els.send = $("#ds-send-layer");
     els.exportFlat = $("#ds-export-flat");
+    els.refreshPreview = $("#ds-refresh-preview");
 
     bind();
     bindEffectMonitor();
@@ -106,6 +107,12 @@
 
     els.send.addEventListener("click", sendActiveLayerToMainEditor);
     els.exportFlat.addEventListener("click", exportFlattenedPNG);
+    els.refreshPreview.addEventListener("click", refreshPreview);
+  }
+
+  function refreshPreview() {
+    window.dispatchEvent(new CustomEvent("dithershop:refresh-preview"));
+    logProcess("MANUAL UPDATE REQUESTED: REFRESHING CURRENT IMAGE");
   }
 
   function bindEffectMonitor() {
