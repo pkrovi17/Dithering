@@ -23,6 +23,8 @@
     output.scrollTop = output.scrollHeight;
   }
 
+  window.dithershopLogProcess = logProcess;
+
   function setProcessBusy(isBusy, label) {
     const light = document.querySelector("#ds-process-light");
     if (!light) return;
@@ -62,6 +64,7 @@
     els.exportFlat = $("#ds-export-flat");
 
     bind();
+    bindEffectMonitor();
     createBaseLayer();
     observeAppName();
     setInterval(renameApp, 700);
@@ -103,6 +106,91 @@
 
     els.send.addEventListener("click", sendActiveLayerToMainEditor);
     els.exportFlat.addEventListener("click", exportFlattenedPNG);
+  }
+
+  function bindEffectMonitor() {
+    const seenValues = new WeakMap();
+    const ignoredSelectors = "#ds-layer-panel, #ds-topbar, #ds-console";
+
+    document.addEventListener("pointerdown", event => {
+      const source = event.target instanceof Element ? event.target : null;
+      const target = source?.closest("button, [role='button'], [aria-pressed]");
+      if (!target || target.closest(ignoredSelectors) || !target.closest("#root")) return;
+
+      const label = readableControlLabel(target);
+      if (!label) return;
+
+      logProcess(`EFFECT UI CLICK: ${label}`);
+    }, true);
+
+    document.addEventListener("focusin", event => {
+      const target = event.target;
+      if (!isLoggableField(target) || target.closest(ignoredSelectors) || !target.closest("#root")) return;
+      seenValues.set(target, readControlValue(target));
+    }, true);
+
+    document.addEventListener("input", event => {
+      const target = event.target;
+      if (!isLoggableField(target) || target.closest(ignoredSelectors) || !target.closest("#root")) return;
+
+      const label = readableControlLabel(target);
+      const previous = seenValues.get(target);
+      const current = readControlValue(target);
+
+      if (previous === current) return;
+      seenValues.set(target, current);
+
+      logProcess(`EFFECT CONTROL: ${label || target.type || target.tagName.toLowerCase()} ${formatValue(previous)} -> ${formatValue(current)}`);
+    }, true);
+
+    document.addEventListener("change", event => {
+      const target = event.target;
+      if (!isLoggableField(target) || target.closest(ignoredSelectors) || !target.closest("#root")) return;
+
+      const label = readableControlLabel(target);
+      const current = readControlValue(target);
+
+      seenValues.set(target, current);
+      logProcess(`EFFECT CHANGE COMMITTED: ${label || target.tagName.toLowerCase()} = ${formatValue(current)}`);
+    }, true);
+  }
+
+  function isLoggableField(target) {
+    return target instanceof HTMLInputElement ||
+      target instanceof HTMLSelectElement ||
+      target instanceof HTMLTextAreaElement;
+  }
+
+  function readControlValue(target) {
+    if (target instanceof HTMLInputElement && target.type === "checkbox") {
+      return target.checked ? "on" : "off";
+    }
+
+    return target.value;
+  }
+
+  function readableControlLabel(target) {
+    const aria = target.getAttribute("aria-label");
+    const title = target.getAttribute("title");
+    const text = target.textContent?.trim();
+    const idLabel = target.id ? document.querySelector(`label[for="${CSS.escape(target.id)}"]`)?.textContent?.trim() : "";
+    const parentLabel = target.closest("label")?.textContent?.trim();
+    const nearby = target.parentElement?.textContent?.trim();
+
+    return cleanLabel(aria || title || idLabel || parentLabel || text || nearby || "");
+  }
+
+  function cleanLabel(value) {
+    return String(value)
+      .replace(/\s+/g, " ")
+      .replace(/\b\d+(\.\d+)?%?\b/g, "")
+      .trim()
+      .slice(0, 96);
+  }
+
+  function formatValue(value) {
+    if (value === undefined || value === null || value === "") return "(blank)";
+    return String(value).slice(0, 48);
   }
 
   function createBaseLayer() {

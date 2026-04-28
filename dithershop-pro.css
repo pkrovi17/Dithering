@@ -80,7 +80,7 @@ body::after {
   99% { opacity: 0.955; }
 }
 
-/* top professional menu bar */
+/* top status bar */
 #ds-topbar {
   position: fixed;
   z-index: 50;
@@ -126,34 +126,10 @@ body::after {
   letter-spacing: 0.12em;
 }
 
-.ds-menu {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  flex: 1;
-}
-
-.ds-menu button,
 .ds-status span,
 #ds-layer-panel button,
 #ds-layer-panel select {
   font-family: inherit !important;
-}
-
-.ds-menu button {
-  color: var(--term-text-dim);
-  background: transparent;
-  border: 1px solid transparent;
-  padding: 5px 9px;
-  font-size: 12px;
-  cursor: pointer;
-}
-
-.ds-menu button:hover {
-  color: var(--term-text-bright);
-  border-color: var(--term-border);
-  background: rgba(255, 196, 0, 0.08);
-  text-shadow: 0 0 7px rgba(255, 196, 0, 0.45);
 }
 
 .ds-status {
