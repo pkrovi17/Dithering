@@ -4,11 +4,11 @@
   --term-panel: #100b00 !important;
   --term-panel-2: #160f00 !important;
   --term-border: #7a5200 !important;
-  --term-accent: #ffb000 !important;
-  --term-accent-dim: #c78300 !important;
-  --term-text: #ffc247 !important;
-  --term-text-dim: #b98218 !important;
-  --term-text-bright: #ffd978 !important;
+  --term-accent: #ffc400 !important;
+  --term-accent-dim: #d99400 !important;
+  --term-text: #ffe08a !important;
+  --term-text-dim: #e8a82a !important;
+  --term-text-bright: #fff0b8 !important;
 
   --ds-topbar-height: 42px;
   --ds-layer-width: 320px;
@@ -38,8 +38,8 @@ body::before {
   pointer-events: none;
   background: repeating-linear-gradient(
     to bottom,
-    rgba(255, 176, 0, 0.045),
-    rgba(255, 176, 0, 0.045) 1px,
+    rgba(255, 196, 0, 0.045),
+    rgba(255, 196, 0, 0.045) 1px,
     transparent 1px,
     transparent 4px
   );
@@ -47,7 +47,7 @@ body::before {
 }
 
 /* CRT glow / vignette */
-body::after {
+/* body::after {
   content: "";
   position: fixed;
   inset: 0;
@@ -56,8 +56,12 @@ body::after {
   background:
     radial-gradient(circle at center, transparent 42%, rgba(0, 0, 0, 0.62) 100%);
   box-shadow:
-    inset 0 0 90px rgba(255, 176, 0, 0.15),
+    inset 0 0 90px rgba(255, 196, 0, 0.15),
     inset 0 0 220px rgba(0, 0, 0, 0.92);
+} */
+
+body::after {
+  display: none;
 }
 
 #root {
@@ -91,8 +95,8 @@ body::after {
     linear-gradient(to bottom, rgba(35, 23, 0, 0.96), rgba(10, 7, 0, 0.96));
   border-bottom: 1px solid var(--term-border);
   box-shadow:
-    0 0 18px rgba(255, 176, 0, 0.16),
-    inset 0 -1px 0 rgba(255, 176, 0, 0.16);
+    0 0 18px rgba(255, 196, 0, 0.16),
+    inset 0 -1px 0 rgba(255, 196, 0, 0.16);
 }
 
 .ds-brand {
@@ -104,7 +108,7 @@ body::after {
   letter-spacing: 0.08em;
   font-size: 13px;
   white-space: nowrap;
-  text-shadow: 0 0 8px rgba(255, 176, 0, 0.55);
+  text-shadow: 0 0 9px rgba(255, 196, 0, 0.65);
 }
 
 .ds-logo {
@@ -113,7 +117,7 @@ body::after {
   width: 22px;
   height: 22px;
   border: 1px solid var(--term-accent);
-  box-shadow: 0 0 10px rgba(255, 176, 0, 0.32);
+  box-shadow: 0 0 10px rgba(255, 196, 0, 0.32);
 }
 
 .ds-brand small {
@@ -148,8 +152,8 @@ body::after {
 .ds-menu button:hover {
   color: var(--term-text-bright);
   border-color: var(--term-border);
-  background: rgba(255, 176, 0, 0.08);
-  text-shadow: 0 0 7px rgba(255, 176, 0, 0.45);
+  background: rgba(255, 196, 0, 0.08);
+  text-shadow: 0 0 7px rgba(255, 196, 0, 0.45);
 }
 
 .ds-status {
@@ -189,11 +193,19 @@ body::after {
 
 .text-term-text-bright {
   color: var(--term-text-bright) !important;
-  text-shadow: 0 0 6px rgba(255, 176, 0, 0.42);
+  text-shadow: 0 0 9px rgba(255, 196, 0, 0.65) !important;
 }
 
 .bg-term-text-bright {
   background-color: var(--term-accent) !important;
+}
+
+body,
+button,
+input,
+select,
+textarea {
+  color: var(--term-text) !important;
 }
 
 button,
@@ -206,7 +218,17 @@ textarea {
 button:hover,
 a:hover {
   color: var(--term-text-bright) !important;
-  text-shadow: 0 0 7px rgba(255, 176, 0, 0.5);
+  text-shadow: 0 0 7px rgba(255, 196, 0, 0.5);
+}
+
+h1,
+h2,
+h3,
+strong,
+.ds-brand,
+.ds-layer-title strong {
+  color: var(--term-text-bright) !important;
+  text-shadow: 0 0 9px rgba(255, 196, 0, 0.65) !important;
 }
 
 canvas,
@@ -216,7 +238,7 @@ img {
     sepia(0.28)
     saturate(1.16)
     contrast(1.08)
-    drop-shadow(0 0 8px rgba(255, 176, 0, 0.16));
+    drop-shadow(0 0 8px rgba(255, 196, 0, 0.16));
 }
 
 /* right layer panel */
@@ -234,7 +256,7 @@ img {
   border-left: 1px solid var(--term-border);
   box-shadow:
     -10px 0 30px rgba(0, 0, 0, 0.45),
-    -1px 0 16px rgba(255, 176, 0, 0.12);
+    -1px 0 16px rgba(255, 196, 0, 0.12);
   color: var(--term-text);
 }
 
@@ -265,11 +287,11 @@ img {
 #ds-add-layer {
   width: 30px;
   height: 30px;
-  color: var(--term-bg);
+  color: var(--term-bg) !important;
   background: var(--term-accent);
   border: 1px solid var(--term-accent);
   cursor: pointer;
-  box-shadow: 0 0 12px rgba(255, 176, 0, 0.25);
+  box-shadow: 0 0 12px rgba(255, 196, 0, 0.25);
 }
 
 .ds-layer-actions {
@@ -283,7 +305,7 @@ img {
 .ds-layer-actions button,
 .ds-layer-controls button {
   color: var(--term-text-bright);
-  background: rgba(255, 176, 0, 0.07);
+  background: rgba(255, 196, 0, 0.07);
   border: 1px solid var(--term-border);
   padding: 8px 9px;
   font-size: 11px;
@@ -293,7 +315,7 @@ img {
 
 .ds-layer-actions button:hover,
 .ds-layer-controls button:hover {
-  background: rgba(255, 176, 0, 0.13);
+  background: rgba(255, 196, 0, 0.13);
   border-color: var(--term-accent);
 }
 
@@ -311,14 +333,14 @@ img {
   padding: 8px;
   margin-bottom: 7px;
   border: 1px solid var(--term-border);
-  background: rgba(255, 176, 0, 0.045);
+  background: rgba(255, 196, 0, 0.045);
   cursor: pointer;
 }
 
 .ds-layer.active {
   border-color: var(--term-accent);
-  background: rgba(255, 176, 0, 0.12);
-  box-shadow: 0 0 13px rgba(255, 176, 0, 0.13);
+  background: rgba(255, 196, 0, 0.12);
+  box-shadow: 0 0 13px rgba(255, 196, 0, 0.13);
 }
 
 .ds-layer canvas,
@@ -326,7 +348,7 @@ img {
   width: 46px;
   height: 38px;
   object-fit: cover;
-  border: 1px solid rgba(255, 176, 0, 0.35);
+  border: 1px solid rgba(255, 196, 0, 0.35);
   background: #000;
 }
 
@@ -361,7 +383,7 @@ img {
   height: 21px;
   color: var(--term-text-dim);
   background: transparent;
-  border: 1px solid rgba(255, 176, 0, 0.24);
+  border: 1px solid rgba(255, 196, 0, 0.24);
   cursor: pointer;
   font-size: 10px;
   padding: 0;
@@ -409,6 +431,81 @@ img {
   line-height: 1.45;
 }
 
+/* process monitor */
+#ds-console {
+  position: fixed;
+  z-index: 45;
+  left: 14px;
+  bottom: 14px;
+  width: 390px;
+  max-width: calc(100vw - var(--ds-layer-width) - 38px);
+  height: 145px;
+  display: flex;
+  flex-direction: column;
+  background: rgba(8, 6, 0, 0.94);
+  border: 1px solid var(--term-border);
+  box-shadow:
+    0 0 18px rgba(255, 196, 0, 0.24),
+    inset 0 0 18px rgba(255, 196, 0, 0.08);
+  color: var(--term-text-bright);
+}
+
+#ds-console header {
+  height: 30px;
+  padding: 0 9px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--term-border);
+  background: rgba(255, 196, 0, 0.08);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 11px;
+}
+
+#ds-process-light {
+  color: #050400 !important;
+  background: var(--term-accent);
+  border: 1px solid var(--term-accent);
+  padding: 2px 7px;
+  font-size: 10px;
+  box-shadow: 0 0 10px rgba(255, 196, 0, 0.5);
+}
+
+#ds-process-light.busy {
+  animation: ds-process-pulse 0.55s infinite alternate;
+}
+
+@keyframes ds-process-pulse {
+  from {
+    opacity: 0.55;
+    box-shadow: 0 0 6px rgba(255, 196, 0, 0.35);
+  }
+  to {
+    opacity: 1;
+    box-shadow: 0 0 18px rgba(255, 196, 0, 0.85);
+  }
+}
+
+#ds-console-output {
+  flex: 1;
+  padding: 8px 10px;
+  overflow: auto;
+  font-size: 11px;
+  line-height: 1.45;
+  text-shadow: 0 0 7px rgba(255, 196, 0, 0.55);
+}
+
+.ds-console-line {
+  white-space: pre-wrap;
+  color: var(--term-text-bright);
+}
+
+.ds-console-line::before {
+  content: "> ";
+  color: var(--term-accent);
+}
+
 /* professional editor composition */
 #root > div:not(.ds-boot) {
   height: 100%;
@@ -422,7 +519,7 @@ img {
 #root aside {
   box-shadow:
     8px 0 28px rgba(0, 0, 0, 0.42),
-    1px 0 13px rgba(255, 176, 0, 0.1);
+    1px 0 13px rgba(255, 196, 0, 0.1);
 }
 
 #root main,

@@ -9,6 +9,44 @@
 
   const els = {};
 
+  function logProcess(message) {
+    const output = document.querySelector("#ds-console-output");
+    if (!output) return;
+
+    const line = document.createElement("div");
+    line.className = "ds-console-line";
+
+    const time = new Date().toLocaleTimeString();
+    line.textContent = `[${time}] ${message}`;
+
+    output.appendChild(line);
+    output.scrollTop = output.scrollHeight;
+  }
+
+  function setProcessBusy(isBusy, label) {
+    const light = document.querySelector("#ds-process-light");
+    if (!light) return;
+
+    light.textContent = label || (isBusy ? "RUNNING" : "IDLE");
+    light.classList.toggle("busy", isBusy);
+  }
+
+  async function withProcess(label, task) {
+    setProcessBusy(true, "RUNNING");
+    logProcess(label);
+
+    try {
+      const result = await task();
+      logProcess("DONE");
+      return result;
+    } catch (error) {
+      logProcess("ERROR: " + error.message);
+      throw error;
+    } finally {
+      setProcessBusy(false, "IDLE");
+    }
+  }
+
   function $(selector) {
     return document.querySelector(selector);
   }
@@ -27,6 +65,9 @@
     createBaseLayer();
     observeAppName();
     setInterval(renameApp, 700);
+
+    logProcess("DITHERSHOP PROCESS MONITOR ONLINE");
+    logProcess("READY");
   }
 
   function bind() {
@@ -34,24 +75,30 @@
 
     els.input.addEventListener("change", async event => {
       const files = Array.from(event.target.files || []);
+
       for (const file of files) {
         await addImageLayer(file);
       }
+
       event.target.value = "";
     });
 
     els.opacity.addEventListener("input", () => {
       const layer = activeLayer();
       if (!layer) return;
+
       layer.opacity = Number(els.opacity.value) / 100;
       renderLayers();
+      logProcess(`OPACITY SET: ${Math.round(layer.opacity * 100)}%`);
     });
 
     els.blend.addEventListener("change", () => {
       const layer = activeLayer();
       if (!layer) return;
+
       layer.blend = els.blend.value;
       renderLayers();
+      logProcess(`BLEND MODE SET: ${labelBlend(layer.blend).toUpperCase()}`);
     });
 
     els.send.addEventListener("click", sendActiveLayerToMainEditor);
@@ -77,27 +124,31 @@
   }
 
   async function addImageLayer(file) {
-    const image = await loadImage(file);
+    await withProcess(`IMPORTING LAYER: ${file.name}`, async () => {
+      const image = await loadImage(file);
 
-    const layer = {
-      id: state.nextId++,
-      name: file.name || `Layer ${state.nextId}`,
-      opacity: 1,
-      blend: "source-over",
-      visible: true,
-      image,
-      width: image.naturalWidth || image.width,
-      height: image.naturalHeight || image.height,
-      file
-    };
+      const layer = {
+        id: state.nextId++,
+        name: file.name || `Layer ${state.nextId}`,
+        opacity: 1,
+        blend: "source-over",
+        visible: true,
+        image,
+        width: image.naturalWidth || image.width,
+        height: image.naturalHeight || image.height,
+        file
+      };
 
-    state.layers.unshift(layer);
-    state.activeId = layer.id;
-    renderLayers();
+      state.layers.unshift(layer);
+      state.activeId = layer.id;
+      renderLayers();
 
-    if (state.layers.filter(l => l.image).length === 1) {
-      sendLayerFileToMainEditor(layer);
-    }
+      logProcess(`LAYER READY: ${layer.width}x${layer.height}`);
+
+      if (state.layers.filter(l => l.image).length === 1) {
+        sendLayerFileToMainEditor(layer);
+      }
+    });
   }
 
   function loadImage(file) {
@@ -130,6 +181,7 @@
     if (layer) {
       els.opacity.value = Math.round(layer.opacity * 100);
       els.blend.value = layer.blend;
+      logProcess(`ACTIVE LAYER: ${layer.name}`);
     }
 
     renderLayers();
@@ -147,14 +199,19 @@
     state.layers[target] = temp;
 
     renderLayers();
+    logProcess("LAYER ORDER UPDATED");
   }
 
   function removeLayer(id) {
-    if (state.layers.length <= 1) return;
+    if (state.layers.length <= 1) {
+      logProcess("DELETE BLOCKED: AT LEAST ONE LAYER REQUIRED");
+      return;
+    }
 
     const index = state.layers.findIndex(layer => layer.id === id);
     if (index < 0) return;
 
+    const removed = state.layers[index];
     state.layers.splice(index, 1);
 
     if (state.activeId === id) {
@@ -162,6 +219,7 @@
     }
 
     renderLayers();
+    logProcess(`LAYER REMOVED: ${removed.name}`);
   }
 
   function toggleLayer(id) {
@@ -170,12 +228,13 @@
 
     layer.visible = !layer.visible;
     renderLayers();
+    logProcess(`${layer.visible ? "SHOWING" : "HIDING"} LAYER: ${layer.name}`);
   }
 
   function renderLayers() {
     els.list.innerHTML = "";
 
-    state.layers.forEach((layer, index) => {
+    state.layers.forEach(layer => {
       const row = document.createElement("div");
       row.className = "ds-layer" + (layer.id === state.activeId ? " active" : "");
       row.addEventListener("click", () => setActive(layer.id));
@@ -236,11 +295,11 @@
     ctx.fillStyle = "#050400";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    ctx.strokeStyle = "rgba(255,176,0,0.28)";
+    ctx.strokeStyle = "rgba(255,196,0,0.28)";
     ctx.strokeRect(0.5, 0.5, canvas.width - 1, canvas.height - 1);
 
     if (!layer.image) {
-      ctx.fillStyle = "#ffb000";
+      ctx.fillStyle = "#ffc400";
       ctx.font = "10px monospace";
       ctx.fillText("BASE", 29, 41);
       return;
@@ -279,10 +338,13 @@
 
     if (!layer || !layer.file) {
       alert("Select an imported image layer first.");
+      logProcess("NO ACTIVE IMAGE LAYER");
       return;
     }
 
-    sendLayerFileToMainEditor(layer);
+    withProcess(`SENDING TO DITHERSHOP ENGINE: ${layer.name}`, async () => {
+      sendLayerFileToMainEditor(layer);
+    });
   }
 
   function sendLayerFileToMainEditor(layer) {
@@ -290,6 +352,7 @@
 
     if (!originalUpload) {
       alert("Main Dithershop editor upload control is not ready yet.");
+      logProcess("UPLOAD CONTROL NOT READY");
       return;
     }
 
@@ -298,50 +361,57 @@
 
     originalUpload.files = transfer.files;
     originalUpload.dispatchEvent(new Event("change", { bubbles: true }));
+
+    logProcess(`ENGINE RECEIVED: ${layer.name}`);
   }
 
   function exportFlattenedPNG() {
-    const imageLayers = state.layers.filter(layer => layer.image && layer.visible);
+    withProcess("FLATTENING LAYER STACK", async () => {
+      const imageLayers = state.layers.filter(layer => layer.image && layer.visible);
 
-    if (!imageLayers.length) {
-      alert("Import at least one visible image layer first.");
-      return;
-    }
+      if (!imageLayers.length) {
+        alert("Import at least one visible image layer first.");
+        logProcess("EXPORT ABORTED: NO VISIBLE IMAGE LAYERS");
+        return;
+      }
 
-    const bounds = imageLayers.reduce(
-      (acc, layer) => ({
-        width: Math.max(acc.width, layer.width),
-        height: Math.max(acc.height, layer.height)
-      }),
-      { width: 1, height: 1 }
-    );
+      const bounds = imageLayers.reduce(
+        (acc, layer) => ({
+          width: Math.max(acc.width, layer.width),
+          height: Math.max(acc.height, layer.height)
+        }),
+        { width: 1, height: 1 }
+      );
 
-    const canvas = document.createElement("canvas");
-    canvas.width = bounds.width;
-    canvas.height = bounds.height;
+      const canvas = document.createElement("canvas");
+      canvas.width = bounds.width;
+      canvas.height = bounds.height;
 
-    const ctx = canvas.getContext("2d");
-    ctx.fillStyle = "#050400";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const ctx = canvas.getContext("2d");
+      ctx.fillStyle = "#050400";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    [...state.layers].reverse().forEach(layer => {
-      if (!layer.image || !layer.visible) return;
+      [...state.layers].reverse().forEach(layer => {
+        if (!layer.image || !layer.visible) return;
 
-      const fit = contain(layer.width, layer.height, canvas.width, canvas.height);
-      ctx.globalAlpha = layer.opacity;
-      ctx.globalCompositeOperation = layer.blend;
-      ctx.drawImage(layer.image, fit.x, fit.y, fit.w, fit.h);
+        const fit = contain(layer.width, layer.height, canvas.width, canvas.height);
+        ctx.globalAlpha = layer.opacity;
+        ctx.globalCompositeOperation = layer.blend;
+        ctx.drawImage(layer.image, fit.x, fit.y, fit.w, fit.h);
+      });
+
+      ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = "source-over";
+
+      const url = canvas.toDataURL("image/png");
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.download = "dithershop-flattened.png";
+      link.click();
+
+      logProcess(`EXPORTED PNG: ${canvas.width}x${canvas.height}`);
     });
-
-    ctx.globalAlpha = 1;
-    ctx.globalCompositeOperation = "source-over";
-
-    const url = canvas.toDataURL("image/png");
-    const link = document.createElement("a");
-
-    link.href = url;
-    link.download = "dithershop-flattened.png";
-    link.click();
   }
 
   function labelBlend(value) {
