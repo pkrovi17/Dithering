@@ -58,6 +58,3 @@ No build step or package install is required for the current checked-in version.
 
 Dithershop is designed for modern desktop browsers. Some video export paths may depend on browser media APIs such as WebCodecs, MediaRecorder, and WebGL2 support.
 
-## Development Notes
-
-This repository currently contains built static assets rather than the original source project. If source files are added later, update this README with the package manager, build command, and deployment workflow.
